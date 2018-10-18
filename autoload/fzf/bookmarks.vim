@@ -61,7 +61,7 @@ function! s:pad(t, n)
 endfunction
 
 function! s:is_annotation(t)
-    if a:t =~ "^Annotation: " | return s:green("§ ".a:t[12:]) | endif
+    if a:t =~ "^Annotation: " | return "§ ".a:t[12:] | endif
 endfunction
 
 function! s:format_text(t, f)
@@ -75,13 +75,13 @@ function! s:format_text(t, f)
     " when colorizing text, the actual string will be longer than the one
     " that is showed, store the difference and add it to the padding
     let slen = len(text)
-    let text = substitute(text, "\t", s:cyan("\\\\t"), "g")
+    let text = substitute(text, "\t", "\\\\t", "g")
     let diff = len(text) - slen
 
     let annotation = s:is_annotation(text) | let slen = len(text)
     if !empty(annotation) | let text = annotation | let diff = len(text) - slen + 10 | endif
 
-    return s:preview? [s:pad(text, 60), !empty(annotation)] : s:pad(text, 60+diff)."\t".s:cyan(fname)
+    return s:preview? [s:pad(text, 60), !empty(annotation)] : s:pad(text, 60+diff)."\t".fname
 endfunction
 
 function! s:format_line(b)
@@ -97,9 +97,9 @@ function! s:format_line(b)
 
     if s:preview
         let text = text[1]? "\t".text[0] : ''
-        return s:yellow(fname).":".lnr.text
+        return fname.":".lnr.text
     else
-        return s:yellow(lnr)."\t".text
+        return lnr."\t".text
     endif
 endfunction
 

@@ -34,6 +34,7 @@ call s:set('g:bookmark_location_list',        0 )
 call s:set('g:bookmark_disable_ctrlp',        0 )
 call s:set('g:bookmark_prefer_fzf',           0 )
 call s:set('g:bookmark_fzf_preview',          0 )
+call s:set('g:bookmark_fzf_rg',               0 )
 call s:set('g:bookmark_fzf_preview_layout',   ['up', '60%'] )
 
 function! s:init(file)
@@ -313,7 +314,10 @@ fun! s:fzf_args(bang)
   let args =  {
         \ 'source': fzf#bookmarks#list(a:bang),
         \ 'sink': function('fzf#bookmarks#open'),
-        \ 'options': '--prompt "Bookmarks  >>>  "'}
+        \ 'options': ['--ansi', '--prompt', 'Bookmarks> ',
+          \             '--multi', '--bind', 'alt-a:select-all,alt-d:deselect-all',
+        \ '--color', 'hl:4,hl+:12']
+        \}
   if a:bang
     let p = g:bookmark_fzf_preview_layout
     let args[p[0]] = p[1]
@@ -327,6 +331,12 @@ command! -bang -nargs=? -complete=buffer FzfBookmarks call fzf#vim#ag(<q-args>,
   \                 <bang>0 ? fzf#vim#with_preview(s:fzf_args(1))
   \                         : s:fzf_args(0))
 
+command! -bang -nargs=? -complete=buffer FzfBookmarksRg call fzf#vim#grep(
+            \                  'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>),
+            \                   1,
+            \                  <bang>0 ? fzf#vim#with_preview(s:fzf_args(1))
+            \                         : s:fzf_args(0),
+            \                  <bang>0)
 
 " }}}
 
