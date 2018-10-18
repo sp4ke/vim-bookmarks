@@ -35,7 +35,8 @@ call s:set('g:bookmark_disable_ctrlp',        0 )
 call s:set('g:bookmark_prefer_fzf',           0 )
 call s:set('g:bookmark_fzf_preview',          0 )
 call s:set('g:bookmark_fzf_rg',               0 )
-call s:set('g:bookmark_fzf_preview_layout',   ['up', '60%'] )
+call s:set('g:bookmark_fzf_preview_layout',   ['up', '30%'] )
+call s:set('g:bookmark_fzf_layout',           ['down', '30%'] )
 
 function! s:init(file)
   if g:bookmark_auto_save ==# 1 || g:bookmark_manage_per_buffer ==# 1
@@ -311,20 +312,21 @@ command! -nargs=? BookmarkMoveDown call s:move_relative(<q-args>, 1)
 command! -nargs=? BookmarkMoveToLine call s:move_absolute(<q-args>)
 
 fun! s:fzf_args(bang)
-  let args =  {
-        \ 'source': fzf#bookmarks#list(a:bang),
-        \ 'sink': function('fzf#bookmarks#open'),
-        \ 'options': ['--ansi', '--prompt', 'Bookmarks> ',
-          \             '--multi', '--bind', 'alt-a:select-all,alt-d:deselect-all',
-        \ '--color', 'hl:4,hl+:12']
-        \}
-  if a:bang
-    let p = g:bookmark_fzf_preview_layout
-    let args[p[0]] = p[1]
-  else
-    let args['down'] = '30%'
-  endif
-  return args
+    let args =  {
+                \ 'source': fzf#bookmarks#list(a:bang),
+                \ 'sink': function('fzf#bookmarks#open'),
+                \ 'options': ['--ansi', '--prompt', 'Bookmarks> ',
+                \             '--multi', '--bind', 'alt-a:select-all,alt-d:deselect-all',
+                \ '--color', 'hl:4,hl+:12']
+                \}
+    if a:bang
+        let p = g:bookmark_fzf_preview_layout
+        let args[p[0]] = p[1]
+    else
+        let p = g:bookmark_fzf_layout
+        let args[p[0]] = p[1]
+    endif
+    return args
 endfun
 
 command! -bang -nargs=? -complete=buffer FzfBookmarks call fzf#vim#ag(<q-args>, 
